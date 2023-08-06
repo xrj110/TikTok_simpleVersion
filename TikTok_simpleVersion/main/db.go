@@ -10,8 +10,8 @@ func main() {
 
 	tools.DbCon.AutoMigrate(&Entry.User{})
 
-	//tools.DbCon.AutoMigrate(&controller.Video{})
-	//tools.DbCon.AutoMigrate(&controller.Comment{})
+	//tools.DbCon.AutoMigrate(&Entry.Video{})
+	//tools.DbCon.AutoMigrate(&Entry.Comment{})
 	tools.DbCon.AutoMigrate(&Entry.LoginInfor{})
 
 }
