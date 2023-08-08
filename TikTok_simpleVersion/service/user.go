@@ -40,3 +40,21 @@ func Register(username string, password string) int {
 	return 0
 
 }
+func Login(username string, password string) Entry.User {
+	var login Entry.LoginInfor
+	password = tools.Md5Encode(password)
+	tools.Init()
+
+	result := tools.DbCon.Where("user_name = ? AND password = ?", username, password).First(&login)
+	if result.Error != nil {
+		return Entry.User{}
+	}
+	var user Entry.User
+	result = tools.DbCon.Where("id=?", login.UserID).First(&user)
+	if result.Error != nil {
+		panic("can't find the user")
+
+	}
+	return user
+
+}
