@@ -1,9 +1,9 @@
 package service
 
 import (
+	"context"
 	"github.com/RaymondCode/simple-demo/Entry"
 	"github.com/RaymondCode/simple-demo/tools"
-
 	"log"
 )
 
@@ -11,7 +11,7 @@ import (
 func Register(username string, password string) int {
 	var login Entry.LoginInfor
 
-	tools.Init()
+	tools.SqlInit()
 	result := tools.DbCon.Where("user_name=?", username).First(&login)
 	if result.Error == nil {
 		return 1
@@ -43,7 +43,7 @@ func Register(username string, password string) int {
 func Login(username string, password string) Entry.User {
 	var login Entry.LoginInfor
 	password = tools.Md5Encode(password)
-	tools.Init()
+	tools.SqlInit()
 
 	result := tools.DbCon.Where("user_name = ? AND password = ?", username, password).First(&login)
 	if result.Error != nil {
@@ -57,4 +57,17 @@ func Login(username string, password string) Entry.User {
 	}
 	return user
 
+}
+func CheckLogin(token string) (*Entry.User, error) {
+
+	ctx := context.Background()
+	serUser, err := tools.GetClient().Get(ctx, token).Result()
+	if err != nil {
+		return nil, err
+	}
+	user, err := Entry.DeserializeUser(serUser)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

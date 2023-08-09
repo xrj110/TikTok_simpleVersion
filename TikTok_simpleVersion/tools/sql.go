@@ -11,7 +11,7 @@ var (
 	err   error
 )
 
-func Init() {
+func SqlInit() {
 	DbCon, err = gorm.Open("mysql", "root:000314@tcp(localhost:3306)/dy?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		fmt.Println("Failed to connect to database")

@@ -1,6 +1,7 @@
 package Entry
 
 import (
+	"encoding/json"
 	"gorm.io/gorm"
 	"time"
 )
@@ -11,15 +12,20 @@ type Response struct {
 }
 
 type Video struct {
-	gorm.Model
-	Id            int64 `json:"id,omitempty"`
-	Author        User  `json:"author" gorm:"foreignKey:UserID"`
-	UserID        int64
-	PlayUrl       string `json:"play_url" json:"play_url,omitempty"`
-	CoverUrl      string `json:"cover_url,omitempty"`
-	FavoriteCount int64  `json:"favorite_count,omitempty"`
-	CommentCount  int64  `json:"comment_count,omitempty"`
-	IsFavorite    bool   `json:"is_favorite,omitempty"`
+	Id            int64 `json:"id,omitempty"gorm:"primaryKey"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
+	Author        User           `json:"author" `
+	UserName      string         `json:"user_name"`
+	UserID        int64          `gorm:"foreignKey:UserID"`
+	PlayUrl       string         `json:"play_url" json:"play_url,omitempty"`
+	CoverUrl      string         `json:"cover_url,omitempty"`
+	FavoriteCount int64          `json:"favorite_count,omitempty"`
+	CommentCount  int64          `json:"comment_count,omitempty"`
+	IsFavorite    bool           `json:"is_favorite,omitempty"`
+	Title         string         `json:"title,omitempty"`
+	FileName      string         `json:"file_name,omitempty"`
 }
 
 type Comment struct {
@@ -72,4 +78,20 @@ type MessageSendEvent struct {
 type MessagePushEvent struct {
 	FromUserId int64  `json:"user_id,omitempty"`
 	MsgContent string `json:"msg_content,omitempty"`
+}
+
+func SerializeUser(user User) (string, error) {
+	byteArr, err := json.Marshal(user)
+	if err != nil {
+		return "", err
+	}
+	return string(byteArr), nil
+}
+func DeserializeUser(data string) (*User, error) {
+	var user User
+	err := json.Unmarshal([]byte(data), &user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }

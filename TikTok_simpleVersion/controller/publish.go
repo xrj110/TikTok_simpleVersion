@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/RaymondCode/simple-demo/Entry"
+	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
@@ -16,12 +17,13 @@ type VideoListResponse struct {
 // Publish check token then save upload file to public directory
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
-
-	if _, exist := usersLoginInfo[token]; !exist {
-		c.JSON(http.StatusOK, Entry.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+	title := c.PostForm("title")
+	userP, err := service.CheckLogin(token)
+	if err != nil {
+		c.JSON(http.StatusOK, Entry.Response{StatusCode: 1, StatusMsg: "please login"})
 		return
 	}
-
+	user := *userP
 	data, err := c.FormFile("data")
 	if err != nil {
 		c.JSON(http.StatusOK, Entry.Response{
@@ -31,22 +33,35 @@ func Publish(c *gin.Context) {
 		return
 	}
 
-	filename := filepath.Base(data.Filename)
-	user := usersLoginInfo[token]
-	finalName := fmt.Sprintf("%d_%s", user.Id, filename)
-	saveFile := filepath.Join("./public/", finalName)
-	if err := c.SaveUploadedFile(data, saveFile); err != nil {
+	//finalName := fmt.Sprintf("%d_%s", user.Id, filename)
+	fileName := service.SetFileName(user.Id)
+	saveFile := filepath.Join("./public/video/", fileName)
+
+	result := service.Publish(user, saveFile, title, fileName)
+	if result == -1 {
+		panic(fmt.Sprintf("database store failed: %s", user.Id))
 		c.JSON(http.StatusOK, Entry.Response{
-			StatusCode: 1,
-			StatusMsg:  err.Error(),
+			StatusCode: 2,
+			StatusMsg:  "database store failed",
 		})
 		return
+
+	} else {
+		fileName += ".mp4"
+		saveFile := filepath.Join("./public/video/", fileName)
+		if err := c.SaveUploadedFile(data, saveFile); err != nil {
+			c.JSON(http.StatusOK, Entry.Response{
+				StatusCode: 1,
+				StatusMsg:  "upload file failed",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, Entry.Response{
+			StatusCode: 0,
+			StatusMsg:  fileName + " uploaded successfully",
+		})
 	}
 
-	c.JSON(http.StatusOK, Entry.Response{
-		StatusCode: 0,
-		StatusMsg:  finalName + " uploaded successfully",
-	})
 }
 
 // PublishList all users have same publish video list
@@ -57,4 +72,7 @@ func PublishList(c *gin.Context) {
 		},
 		VideoList: DemoVideos,
 	})
+}
+func getCoverURL() {
+
 }

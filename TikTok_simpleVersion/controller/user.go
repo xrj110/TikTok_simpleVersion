@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"context"
 	"github.com/RaymondCode/simple-demo/Entry"
 	"github.com/RaymondCode/simple-demo/service"
+	"github.com/RaymondCode/simple-demo/tools"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -54,17 +56,23 @@ func Register(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
+	ctx := context.Background()
 	username := c.Query("username")
 	password := c.Query("password")
-	result := service.Login(username, password)
-	if result.Id != 0 {
+	currUser := service.Login(username, password)
+	if currUser.Id != 0 {
 		token := username + password
-		usersLoginInfo[token] = result
+
+		ser, _ := Entry.SerializeUser(currUser)
+
+		redis := tools.GetClient()
+		redis.Set(ctx, token, ser, 0)
+
 		//c.SetCookie("token", token, 3600, "/", "localhost", false, false)
 
 		c.JSON(http.StatusOK, UserLoginResponse{
 			Response: Entry.Response{StatusCode: 0},
-			UserId:   result.Id,
+			UserId:   currUser.Id,
 			Token:    token})
 
 	} else {
@@ -76,15 +84,16 @@ func Login(c *gin.Context) {
 
 func UserInfo(c *gin.Context) {
 	token := c.Query("token")
-
-	if user, exist := usersLoginInfo[token]; exist {
-		c.JSON(http.StatusOK, UserResponse{
-			Response: Entry.Response{StatusCode: 0},
-			User:     user,
-		})
-	} else {
+	userP, err := service.CheckLogin(token)
+	user := *userP
+	if err != nil {
 		c.JSON(http.StatusOK, UserResponse{
 			Response: Entry.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		})
 	}
+	c.JSON(http.StatusOK, UserResponse{
+		Response: Entry.Response{StatusCode: 0},
+		User:     user,
+	})
+
 }
