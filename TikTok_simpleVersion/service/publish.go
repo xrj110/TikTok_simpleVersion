@@ -14,10 +14,11 @@ func Publish(user Entry.User, path string, title string, fileName string) int64 
 
 	video := Entry.Video{
 		UserID:   user.Id,
-		PlayUrl:  path,
+		PlayUrl:  path + ".mp4",
 		Title:    title,
 		FileName: fileName,
 		UserName: user.Name,
+		CoverUrl: "public/cover/img.jpg",
 	}
 
 	tools.DbCon.Create(&video)
@@ -57,4 +58,12 @@ func SetFileName(userId int64) string {
 		return fmt.Sprintf("%d_%d", userId, 1)
 	}
 
+}
+func PublishList(userId int64) ([]Entry.Video, error) {
+	var videos []Entry.Video
+	result := tools.DbCon.Where("user_id=?", userId).Find(&videos)
+	if result.Error != nil {
+		panic("get video list failed")
+	}
+	return videos, result.Error
 }

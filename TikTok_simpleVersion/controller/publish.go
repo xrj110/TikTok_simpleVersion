@@ -66,11 +66,31 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
+	token := c.PostForm("token")
+	if token == "" {
+		token = c.Query("token")
+	}
+	userP, err := service.CheckLogin(token)
+	if err != nil {
+		c.JSON(http.StatusOK, Entry.Response{StatusCode: 1, StatusMsg: "please login"})
+		return
+	}
+	user := *userP
+
+	videos, err := service.PublishList(user.Id)
+	if err != nil {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response: Entry.Response{
+				StatusCode: 1,
+				StatusMsg:  "get video list failed",
+			},
+		})
+	}
 	c.JSON(http.StatusOK, VideoListResponse{
 		Response: Entry.Response{
 			StatusCode: 0,
 		},
-		VideoList: DemoVideos,
+		VideoList: videos,
 	})
 }
 func getCoverURL() {

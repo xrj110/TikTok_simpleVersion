@@ -91,6 +91,7 @@ func UserInfo(c *gin.Context) {
 			Response: Entry.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		})
 	}
+
 	c.JSON(http.StatusOK, UserResponse{
 		Response: Entry.Response{StatusCode: 0},
 		User:     user,
