@@ -18,7 +18,7 @@ func Publish(user Entry.User, path string, title string, fileName string) int64 
 		Title:    title,
 		FileName: fileName,
 		UserName: user.Name,
-		CoverUrl: "public/cover/img.jpg",
+		CoverUrl: "static\\cover\\img.jpg",
 	}
 
 	tools.DbCon.Create(&video)
@@ -65,5 +65,14 @@ func PublishList(userId int64) ([]Entry.Video, error) {
 	if result.Error != nil {
 		panic("get video list failed")
 	}
-	return videos, result.Error
+
+	return setVideoURL(videos), result.Error
+}
+
+func setVideoURL(videos []Entry.Video) []Entry.Video {
+	for i := range videos {
+		videos[i].PlayUrl = "http://" + tools.IP + ":" + tools.Port + "\\" + videos[i].PlayUrl
+		videos[i].CoverUrl = "http://" + tools.IP + ":" + tools.Port + "\\" + videos[i].CoverUrl
+	}
+	return videos
 }

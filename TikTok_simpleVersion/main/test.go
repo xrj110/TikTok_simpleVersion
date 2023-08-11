@@ -1,9 +1,16 @@
 package main
 
 //func main() {
-//	cmd := exec.Command("./tools/ffmpeg-go@v0.0.0-20230421133911-7e3161df350f", "-i", "bear.mp4", "-vframes", "1", "output.jpg")
-//	err := cmd.Run()
+//	addrs, err := net.InterfaceAddrs()
 //	if err != nil {
-//		log.Fatalf("Failed to extract frame: %s", err)
+//		panic(err)
+//	}
+//
+//	for _, address := range addrs {
+//		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+//			if ipnet.IP.To4() != nil {
+//				fmt.Println("Server IP:", ipnet.IP.String())
+//			}
+//		}
 //	}
 //}

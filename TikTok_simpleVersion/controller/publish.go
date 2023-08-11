@@ -16,14 +16,10 @@ type VideoListResponse struct {
 
 // Publish check token then save upload file to public directory
 func Publish(c *gin.Context) {
-	token := c.PostForm("token")
+
 	title := c.PostForm("title")
-	userP, err := service.CheckLogin(token)
-	if err != nil {
-		c.JSON(http.StatusOK, Entry.Response{StatusCode: 1, StatusMsg: "please login"})
-		return
-	}
-	user := *userP
+	user, _ := c.MustGet("user").(Entry.User)
+	//user := *userP
 	data, err := c.FormFile("data")
 	if err != nil {
 		c.JSON(http.StatusOK, Entry.Response{
@@ -35,7 +31,7 @@ func Publish(c *gin.Context) {
 
 	//finalName := fmt.Sprintf("%d_%s", user.Id, filename)
 	fileName := service.SetFileName(user.Id)
-	saveFile := filepath.Join("./public/video/", fileName)
+	saveFile := filepath.Join(".\\static\\video\\", fileName)
 
 	result := service.Publish(user, saveFile, title, fileName)
 	if result == -1 {
@@ -66,16 +62,8 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
-	token := c.PostForm("token")
-	if token == "" {
-		token = c.Query("token")
-	}
-	userP, err := service.CheckLogin(token)
-	if err != nil {
-		c.JSON(http.StatusOK, Entry.Response{StatusCode: 1, StatusMsg: "please login"})
-		return
-	}
-	user := *userP
+	user, _ := c.MustGet("user").(Entry.User)
+	//user := *userP
 
 	videos, err := service.PublishList(user.Id)
 	if err != nil {
