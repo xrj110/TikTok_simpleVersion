@@ -9,9 +9,9 @@ func main() {
 	tools.SqlInit()
 
 	//tools.DbCon.AutoMigrate(&Entry.User{})
-
+	//
 	//tools.DbCon.AutoMigrate(&Entry.Video{})
-	//tools.DbCon.AutoMigrate(&Entry.Comment{})
-	tools.DbCon.AutoMigrate(&Entry.Video{})
+	//tools.DbCon.AutoMigrate(&Entry.LoginInfor{})
+	tools.DbCon.AutoMigrate(&Entry.Comment{})
 
 }

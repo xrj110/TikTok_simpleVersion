@@ -15,17 +15,21 @@ func Feed(timestamp int64, maxVideos int) ([]Entry.Video, error) {
 		return videos, result.Error
 	}
 	for i := range videos {
-		var user Entry.User
-		result := tools.DbCon.Where("id = ?", videos[i].UserID).First(&user)
-		if result.Error != nil {
-			// Handle the error
-			fmt.Println("Error finding user:", result.Error)
-			return videos, result.Error
-		}
-		videos[i].Author = user
+		SetAuthor(&videos[i])
 
 	}
 
 	return setVideoURL(videos), nil
 
+}
+func SetAuthor(video *Entry.Video) {
+
+	var user Entry.User
+	result := tools.DbCon.Where("id = ?", video.UserID).First(&user)
+	if result.Error != nil {
+		// Handle the error
+		fmt.Println("Error finding user:", result.Error)
+
+	}
+	video.Author = user
 }

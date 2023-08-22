@@ -29,9 +29,9 @@ type Video struct {
 }
 
 type Comment struct {
-	gorm.Model
 	Id         int64  `json:"id,omitempty"`
 	UserID     int64  `gorm:"foreignKey:UserID"`
+	VideoId    int64  `gorm:"primaryKey"`
 	User       User   `json:"user"`
 	Content    string `json:"content,omitempty"`
 	CreateDate string `json:"create_date,omitempty"`
@@ -52,6 +52,14 @@ type User struct {
 	TotalFavorited  int64          `json:"total_favorited,omitempty"`
 	WorkCount       int64          `json:"work_count,omitempty"`
 	FavoriteCount   int64          `json:"favorite_count,omitempty"`
+}
+type UserFavorite struct {
+	UserID    int64 `gorm:"primaryKey"`
+	VideoID   int64 `gorm:"primaryKey"`
+	Valid     int   //1-valid,2-invalid
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type Message struct {

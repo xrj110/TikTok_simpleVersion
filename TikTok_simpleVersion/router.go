@@ -30,9 +30,9 @@ func initRouter(r *gin.Engine) {
 	apiRouter.GET("/publish/list/", Middleware.TokenAuthMiddleware(), controller.PublishList)
 
 	// extra apis - I
-	apiRouter.POST("/favorite/action/", controller.FavoriteAction)
-	apiRouter.GET("/favorite/list/", controller.FavoriteList)
-	apiRouter.POST("/comment/action/", controller.CommentAction)
+	apiRouter.POST("/favorite/action/", Middleware.TokenAuthMiddleware(), controller.FavoriteAction)
+	apiRouter.GET("/favorite/list/", Middleware.TokenAuthMiddleware(), controller.FavoriteList)
+	apiRouter.POST("/comment/action/", Middleware.TokenAuthMiddleware(), controller.CommentAction)
 	apiRouter.GET("/comment/list/", controller.CommentList)
 
 	// extra apis - II
