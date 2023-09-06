@@ -5,6 +5,7 @@ import (
 	"github.com/RaymondCode/simple-demo/tools"
 )
 
+// valid 1-favorite 2-cancel favorite
 func FavoriteAction(favorite Entry.UserFavorite) bool {
 	tools.DbCon.Where("user_id=? AND video_id=?", favorite.UserID, favorite.VideoID).First(&favorite)
 
@@ -32,7 +33,7 @@ func FavoriteAction(favorite Entry.UserFavorite) bool {
 }
 func FavoriteList(userId int64) ([]Entry.Video, error) {
 	var favorites []Entry.UserFavorite
-	result := tools.DbCon.Where("user_id=?", userId).Find(&favorites)
+	result := tools.DbCon.Where("user_id=? AND valid=?", userId, 1).Find(&favorites)
 	if result.Error != nil {
 		return nil, result.Error
 	}

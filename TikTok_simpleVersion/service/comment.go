@@ -33,7 +33,7 @@ func CommentDeleteAction(commentId int64) int32 {
 }
 func CommentList(videoId int64) ([]Entry.Comment, error) {
 	var comments []Entry.Comment
-	result := tools.DbCon.Where("video_id=?", videoId).Find(&comments)
+	result := tools.DbCon.Where("video_id=?", videoId).Order("create_date DESC").Find(&comments)
 	for i := range comments {
 		var user Entry.User
 		result := tools.DbCon.Where("id=?", comments[i].UserID).Find(&user)

@@ -11,7 +11,6 @@ import (
 func Register(username string, password string) int {
 	var login Entry.LoginInfor
 
-	tools.SqlInit()
 	result := tools.DbCon.Where("user_name=?", username).First(&login)
 	if result.Error == nil {
 		return 1
@@ -43,7 +42,6 @@ func Register(username string, password string) int {
 func Login(username string, password string) Entry.User {
 	var login Entry.LoginInfor
 	password = tools.Md5Encode(password)
-	tools.SqlInit()
 
 	result := tools.DbCon.Where("user_name = ? AND password = ?", username, password).First(&login)
 	if result.Error != nil {
