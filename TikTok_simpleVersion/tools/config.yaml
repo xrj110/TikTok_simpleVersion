@@ -1,4 +1,4 @@
-model: 1 # default 1--docker 2--local
+model: 2 # default 1--docker 2--local
 mysql_server_name: 172.18.0.2
 mysql_port: 3306
 redis_server_name: 172.18.0.3

@@ -11,5 +11,6 @@ func CreateTable() {
 	DbCon.AutoMigrate(&Entry.Video{})
 	DbCon.AutoMigrate(&Entry.LoginInfor{})
 	DbCon.AutoMigrate(&Entry.Comment{})
+	DbCon.AutoMigrate(&Entry.Follow{})
 
 }

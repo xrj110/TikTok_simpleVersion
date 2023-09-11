@@ -2,8 +2,10 @@ package controller
 
 import (
 	"github.com/RaymondCode/simple-demo/Entry"
+	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type UserListResponse struct {
@@ -13,12 +15,22 @@ type UserListResponse struct {
 
 // RelationAction no practical effect, just check if token is valid
 func RelationAction(c *gin.Context) {
-	token := c.Query("token")
+	user, _ := c.MustGet("user").(Entry.User)
+	ToUserId := c.Query("to_user_id")
 
-	if _, exist := usersLoginInfo[token]; exist {
-		c.JSON(http.StatusOK, Entry.Response{StatusCode: 0})
+	if ToUserId == "" {
+		c.JSON(http.StatusOK, Entry.Response{StatusCode: 1, StatusMsg: "to user id is null"})
+	}
+	toUserId, _ := strconv.Atoi(ToUserId)
+	if user.Id == int64(toUserId) {
+		c.JSON(http.StatusOK, Entry.Response{StatusCode: 2, StatusMsg: "you can't follow yourself"})
+		return
+	}
+	status, err := service.RelationAction(user, int64(toUserId))
+	if err == nil {
+		c.JSON(http.StatusOK, Entry.Response{StatusCode: status})
 	} else {
-		c.JSON(http.StatusOK, Entry.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+		c.JSON(http.StatusOK, Entry.Response{StatusCode: 1, StatusMsg: err.Error()})
 	}
 }
 

@@ -87,6 +87,14 @@ type MessagePushEvent struct {
 	FromUserId int64  `json:"user_id,omitempty"`
 	MsgContent string `json:"msg_content,omitempty"`
 }
+type Follow struct {
+	FollowId  int64 `json:"follow_id"gorm:"primary_key"`
+	UserId    int64 `json:"user_id,omitempty"`
+	ToUserId  int64 `json:"to_user_id,omitempty"`
+	Status    int64 `json:"status"` //1-follow,-1-unfollow
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
 
 func SerializeUser(user User) (string, error) {
 	byteArr, err := json.Marshal(user)

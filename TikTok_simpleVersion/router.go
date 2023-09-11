@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func initRouter(r *gin.Engine) {
+func InitRouter(r *gin.Engine) {
 	// public directory is used to serve static resources
 	r.Static("/static", "./public")
 	r.LoadHTMLGlob("templates/*")
@@ -36,7 +36,7 @@ func initRouter(r *gin.Engine) {
 	apiRouter.GET("/comment/list/", controller.CommentList)
 
 	// extra apis - II
-	apiRouter.POST("/relation/action/", controller.RelationAction)
+	apiRouter.POST("/relation/action/", Middleware.TokenAuthMiddleware(), controller.RelationAction)
 	apiRouter.GET("/relation/follow/list/", controller.FollowList)
 	apiRouter.GET("/relation/follower/list/", controller.FollowerList)
 	apiRouter.GET("/relation/friend/list/", controller.FriendList)
