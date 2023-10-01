@@ -30,10 +30,18 @@ func Publish(c *gin.Context) {
 	}
 
 	//finalName := fmt.Sprintf("%d_%s", user.Id, filename)
-	fileName := service.SetFileName(user.Id)
-	saveFile := filepath.Join(".\\static\\video\\", fileName)
+	fileName := service.SetFileName(user.Id) + ".mp4"
 
-	result := service.Publish(user, saveFile, title, fileName)
+	saveFile := filepath.Join("./public/video/", fileName)
+	if err := c.SaveUploadedFile(data, saveFile); err != nil {
+		c.JSON(http.StatusOK, Entry.Response{
+			StatusCode: 1,
+			StatusMsg:  "upload file failed",
+		})
+		return
+	}
+	fileName = fileName[:len(fileName)-4]
+	result := service.Publish(user, title, fileName)
 	if result == -1 {
 		panic(fmt.Sprintf("database store failed: %s", user.Id))
 		c.JSON(http.StatusOK, Entry.Response{
@@ -43,15 +51,7 @@ func Publish(c *gin.Context) {
 		return
 
 	} else {
-		fileName += ".mp4"
-		saveFile := filepath.Join("./public/video/", fileName)
-		if err := c.SaveUploadedFile(data, saveFile); err != nil {
-			c.JSON(http.StatusOK, Entry.Response{
-				StatusCode: 1,
-				StatusMsg:  "upload file failed",
-			})
-			return
-		}
+
 		c.JSON(http.StatusOK, Entry.Response{
 			StatusCode: 0,
 			StatusMsg:  fileName + " uploaded successfully",

@@ -10,15 +10,20 @@ import (
 	"time"
 )
 
-func Publish(user Entry.User, path string, title string, fileName string) int64 {
+func Publish(user Entry.User, title string, fileName string) int64 {
+	cover, err := SetCover(fileName)
+	if err != nil {
+		fmt.Printf(err.Error())
+		return -1
+	}
 
 	video := Entry.Video{
 		UserID:   user.Id,
-		PlayUrl:  path + ".mp4",
+		PlayUrl:  "static\\video\\" + fileName + ".mp4",
 		Title:    title,
 		FileName: fileName,
 		UserName: user.Name,
-		CoverUrl: "static\\cover\\img.jpg",
+		CoverUrl: cover,
 	}
 
 	tools.DbCon.Create(&video)
@@ -75,4 +80,10 @@ func setVideoURL(videos []Entry.Video) []Entry.Video {
 		videos[i].CoverUrl = "http://" + tools.IP + ":" + tools.Port + "\\" + videos[i].CoverUrl
 	}
 	return videos
+}
+func SetCover(FileName string) (string, error) {
+	coverPath := tools.AbsPath() + "/public/cover/"
+	videoPath := tools.AbsPath() + "/public/video/" + FileName + ".mp4"
+	err := tools.GenerateCover(videoPath, coverPath, FileName)
+	return "static\\cover\\" + FileName + ".png", err
 }
